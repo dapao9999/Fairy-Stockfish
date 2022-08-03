@@ -202,7 +202,7 @@ void init(OptionsMap& o) {
 #ifndef NNUE_EMBEDDING_OFF
   o["EvalFile"]              << Option(EvalFileDefaultName, on_eval_file);
 #else
-  o["EvalFile"]              << Option("<empty>", on_eval_file);
+  o["EvalFile"]              << Option("xiangqi.nnue", on_eval_file);
 #endif
   o["TsumeMode"]             << Option(false);
   o["VariantPath"]           << Option("<empty>", on_variant_path);

@@ -10,7 +10,7 @@ jobs:
   windows:
     strategy:
       matrix:
-        arch: ["x86-64-bmi2", "x86-64-modern", "x86-64"]
+        arch: ["x86-64-bmi2", "x86-64-modern", "x86-64", "x86-64-avx2"]
     runs-on: windows-2022
 
     steps:

@@ -160,7 +160,7 @@ namespace Stockfish::Eval::NNUE {
     ASSERT_ALIGNED(transformedFeatures, alignment);
     ASSERT_ALIGNED(buffer, alignment);
 
-    const std::size_t bucket = std::min((pos.count<ALL_PIECES>() - 1) * 8 / currentNnueVariant->nnueMaxPieces, 7);
+    const std::size_t bucket = (pos.count<ALL_PIECES>() - 1) / 4;
     const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
     const auto output = network[bucket]->propagate(transformedFeatures, buffer);
 

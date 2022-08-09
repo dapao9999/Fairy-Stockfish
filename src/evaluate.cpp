@@ -618,45 +618,7 @@ namespace {
   }
 
   // Evaluation::hand() scores pieces of a given color and type in hand
-  template<Tracing T> template<Color Us>
-  Score Evaluation<T>::hand(PieceType pt) {
-
-    constexpr Color Them = ~Us;
-
-    Score score = SCORE_ZERO;
-
-    if (pos.count_in_hand(Us, pt) > 0 && pt != KING)
-    {
-        Bitboard b = pos.drop_region(Us, pt) & ~pos.pieces() & (~attackedBy2[Them] | attackedBy[Us][ALL_PIECES]);
-        if ((b & kingRing[Them]) && pt != SHOGI_PAWN)
-        {
-            kingAttackersCountInHand[Us] += pos.count_in_hand(Us, pt);
-            kingAttackersWeightInHand[Us] += KingAttackWeights[std::min(pt, FAIRY_PIECES)] * pos.count_in_hand(Us, pt);
-            kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
-        }
-        Bitboard theirHalf = pos.board_bb() & ~forward_ranks_bb(Them, relative_rank(Them, Rank((pos.max_rank() - 1) / 2), pos.max_rank()));
-        mobility[Us] += DropMobility * popcount(b & theirHalf & ~attackedBy[Them][ALL_PIECES]);
-
-        // Bonus for Kyoto shogi style drops of promoted pieces
-        if (pos.promoted_piece_type(pt) != NO_PIECE_TYPE && pos.drop_promoted())
-            score += make_score(std::max(PieceValue[MG][pos.promoted_piece_type(pt)] - PieceValue[MG][pt], VALUE_ZERO),
-                                std::max(PieceValue[EG][pos.promoted_piece_type(pt)] - PieceValue[EG][pt], VALUE_ZERO)) / 4 * pos.count_in_hand(Us, pt);
-
-        // Mobility bonus for reversi variants
-        if (pos.enclosing_drop())
-            mobility[Us] += make_score(500, 500) * popcount(b);
-
-        // Reduce score if there is a deficit of gates
-        if (pos.seirawan_gating() && !pos.piece_drops() && pos.count_in_hand(Us, ALL_PIECES) > popcount(pos.gates(Us)))
-            score -= make_score(200, 900) / pos.count_in_hand(Us, ALL_PIECES) * (pos.count_in_hand(Us, ALL_PIECES) - popcount(pos.gates(Us)));
-
-        // Redundant pieces that can not be doubled per file (e.g., shogi pawns)
-        if (pt == pos.drop_no_doubled())
-            score -= make_score(50, 20) * std::max(pos.count_with_hand(Us, pt) - pos.max_file() - 1, 0);
-    }
-
-    return score;
-  }
+ 
 
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
 
@@ -1154,12 +1116,7 @@ namespace {
 
   // Evaluation::variant() computes variant-specific evaluation bonuses for a given side.
 
-  template<Tracing T> template<Color Us>
-  Score Evaluation<T>::variant() const {
 
-
-    return {};
-  }
 
 
   // Evaluation::winnable() adjusts the midgame and endgame score components, based on
@@ -1276,6 +1233,7 @@ namespace {
 
   template<Tracing T>
   Value Evaluation<T>::value() {
+  //simpleeval
     assert(!pos.checkers());	  
     int vv =  pos.count<SOLDIER>(WHITE) - pos.count<SOLDIER>(BLACK)
             + (pos.count<CANNON>(WHITE) - pos.count<CANNON>(BLACK)) * 5

@@ -10,14 +10,11 @@ jobs:
   windows:
     strategy:
       matrix:
-        arch: ["x86-64-bmi2", "x86-64-modern", "x86-64", "x86-64-avx2"]
-    runs-on: windows-2022
+        arch: ["x86-64-avx2"]
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: make
-        run: cd src && make clean && make -j build COMP=mingw ARCH=${{ matrix.arch }} EXE=fairy-stockfish_${{ matrix.arch }}.exe && strip fairy-stockfish_${{ matrix.arch }}.exe
 
       - name: make largeboards
         run: cd src && make clean && make -j build COMP=mingw ARCH=${{ matrix.arch }} EXE=fairy-stockfish-largeboards_${{ matrix.arch }}.exe largeboards=yes && strip fairy-stockfish-largeboards_${{ matrix.arch }}.exe
@@ -26,23 +23,3 @@ jobs:
         with:
           name: fairy-stockfish
           path: src/fairy-stockfish*.exe
-
-  linux:
-    strategy:
-      matrix:
-        arch: ["x86-64-bmi2", "x86-64-modern", "x86-64"]
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: make
-        run: cd src && make clean && make -j build COMP=gcc ARCH=${{ matrix.arch }} EXE=fairy-stockfish_${{ matrix.arch }} && strip fairy-stockfish_${{ matrix.arch }}
-
-      - name: make largeboards
-        run: cd src && make clean && make -j build COMP=gcc ARCH=${{ matrix.arch }} EXE=fairy-stockfish-largeboards_${{ matrix.arch }} largeboards=yes && strip fairy-stockfish-largeboards_${{ matrix.arch }}
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: fairy-stockfish
-          path: src/fairy-stockfish*
